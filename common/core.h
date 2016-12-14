@@ -9,8 +9,10 @@
 #include "types.h"
 #include "lock.h"
 
+#ifdef _C11
 typedef struct _Packet Packet;
 typedef struct _Remote Remote;
+#endif
 
 /*! * @brief Packet request completion notification handler function pointer type. */
 //typedef DWORD (*PacketRequestCompletionRoutine)(Remote *remote,

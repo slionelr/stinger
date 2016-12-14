@@ -4,6 +4,7 @@ project(server)
 set(CMAKE_CXX_STANDARD 11)
 
 add_definitions(-D_DEBUG)
+add_definitions(-D_C11)
 #add_definitions(-D_THREADS)
 
 set(COMMON_DIR ../common/)

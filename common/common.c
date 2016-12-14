@@ -4,7 +4,6 @@
 
 #include "types.h"
 #include "common.h"
-#include "command.h"
 #include "base_commands.h"
 
 #include <stdlib.h>

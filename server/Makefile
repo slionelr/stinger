@@ -1,16 +1,20 @@
+MAKE= make
 CC= gcc
 CFLAGS= 
-OBJS= main.o
+OBJ= main.o
 TARGET= server
 COMPILED= ./bin/
+COMMON= ../common/
 
-COMMON= <../common/Makefile>
-#include $(COMMON)
+CFLAGS+= -D_DEBUG
 
 all:	$(TARGET)
-	@echo "Building $(TARGET)\n"
+	@echo "Building pre-requirements\n"
+	$(MAKE) -C $(COMMON)
+	@(mkdir @(COMPILED))
 
 $(TARGET):	$(OBJ)
+	@echo "Building $(TARGET)\n"
 	$(CC) $(CFLAGS) -o $(COMPILED)/$(TARGET) $(.ALLSRC)
 
 $(OBJ):	$(.PREFIX).c
