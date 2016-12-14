@@ -1,0 +1,21 @@
+TARGET= server
+CC= gcc
+CFLAGS=
+OBJS= main.o core.o lock.o
+INC_DIR= ./
+ALLSRC= main.c core.c lock.c
+
+server			: $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(ALLSRC)
+
+main.o          : main.c
+	$(CC) $(CFLAGS) -c main.c
+
+core.o         : core.c
+	$(CC) $(CFLAGS) -c core.c
+
+lock.o        : lock.c
+	$(CC) $(CFLAGS) -c lock.c
+	
+clean:
+	@(rm *.o)
