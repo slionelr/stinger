@@ -1,7 +1,6 @@
 #include "metcli.h"
 #include "../common/common.h"
 
-int local_error;
 LOCK *clientLock = NULL;
 
 Remote *connect_to_target(LPSTR address, DWORD port) {
@@ -14,7 +13,10 @@ Remote *connect_to_target(LPSTR address, DWORD port) {
 }
 
 int main(int argc, char *argv[]) {
-    Remote *target = connect_to_target("127.0.0.1", 31337);
+    Remote *target = connect_to_target("192.168.56.101", 31337);
+    if (target) {
+        return -1;
+    }
 
     do {
         console_read_buffer(target);

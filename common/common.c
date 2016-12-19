@@ -13,6 +13,12 @@
 #include <string.h>
 #include <pthread.h>
 
+#ifdef _BSD
+#include <netinet/in.h>
+#endif
+
+int local_error;
+
 VOID client_connection(Remote *remote);
 
 Remote *gen_Remote() {
@@ -29,7 +35,8 @@ BOOL local_bind(DWORD port) {
     pthread_t tmp;
 
     if ((local = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        error("ERROR on create socket");
+        printf("ERROR on create socket\n");
+        return FALSE;
     }
 
     struct sockaddr_in local_addr, cli_addr;
@@ -38,8 +45,9 @@ BOOL local_bind(DWORD port) {
     local_addr.sin_port = htons(port);
     local_addr.sin_addr.s_addr = INADDR_ANY;
     if ((err = bind(local, (struct sockaddr *) &local_addr, sizeof(local_addr))) < 0) {
-        printf("[COMMON] Error on bind, code=%d", err);
-        error("ERROR on bind");
+        printf("[COMMON] Error on bind, code=%d\n", err);
+        printf("ERROR on bind\n");
+        return FALSE;
     }
 
     listen(local, 1);
@@ -47,8 +55,10 @@ BOOL local_bind(DWORD port) {
 
     do {
         SOCKET newsockfd = accept(local, (struct sockaddr *) &cli_addr, &clilen);
-        if (newsockfd < 0)
-            error("ERROR on accept");
+        if (newsockfd < 0) {
+            printf("ERROR on accept\n");
+            return FALSE;
+        }
 
         printf("[COMMON] Established a connection with a new client\n");
 
@@ -61,6 +71,7 @@ BOOL local_bind(DWORD port) {
         remote->port = ntohs(cli_addr.sin_port);
         remote->sock = newsockfd;
 
+        printf("[COMMON] Creating the thread that will handle this new client.\n");
         pthread_create(&tmp, NULL, client_connection, remote);
 
         // Clean before reuse
@@ -101,14 +112,18 @@ BOOL remote_connect(Remote *remote) {
     remote_addr.sin_port = htons(remote->port);
     if (inet_pton(AF_INET, remote->address, &remote_addr.sin_addr) < 0) {
         // TODO: handle error
+        printf("ERROR on inet_pton\n");
+        return FALSE;
     }
 
     if ((remote->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        error("ERROR on create socket");
+        printf("ERROR on create socket\n");
+        return FALSE;
     }
 
     if (connect(remote->sock, (struct sockaddr *) &remote_addr, sizeof(remote_addr)) < 0) {
-        error("ERROR on connecting to target");
+        printf("ERROR on connecting to target\n");
+        return FALSE;
     }
 
     return remote;

@@ -4,6 +4,7 @@ project(client)
 set(CMAKE_CXX_STANDARD 11)
 
 add_definitions(-D_DEBUG)
+add_definitions(-D_C11)
 
 set(COMMON_DIR ../common/)
 #include_directories(${COMMON_DIR})

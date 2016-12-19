@@ -3,12 +3,13 @@ CFLAGS=
 OBJ= common.o args.o core.o lock.o command.o base_commands.o
 INC_LIBS= -lpthread
 COMPILED= ./bin
+DEBUG= -ggdb
 
-CFLAGS+= -D_DEBUG
+CFLAGS+= -D_DEBUG -D_C11 -D_BSD $(DEBUG)
 
 all:	$(OBJ)
 	@echo "Compiling Common"
-	@(mkdir @(COMPILED))
+#	@(mkdir @(COMPILED))
 
 $(OBJ):	$(.PREFIX).c
 	$(CC) $(CFLAGS) $(INC_LIBS) -c $(.PREFIX).c -o $(COMPILED)/$(.PREFIX).o
