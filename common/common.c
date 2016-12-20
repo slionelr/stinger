@@ -27,12 +27,15 @@ Remote *gen_Remote() {
     remote->transmit = packet_transmit;
     remote->receive = packet_receive;
     remote->lock = lock_create();
+    return remote;
 }
 
 BOOL local_bind(DWORD port) {
     DWORD err;
     SOCKET local;
     pthread_t tmp;
+
+    printf("[COMMON] START server.\n");
 
     if ((local = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("ERROR on create socket\n");
@@ -53,6 +56,7 @@ BOOL local_bind(DWORD port) {
     listen(local, 1);
     int clilen = sizeof(cli_addr);
 
+    printf("[COMMON] Wating for client connections.\n");
     do {
         SOCKET newsockfd = accept(local, (struct sockaddr *) &cli_addr, &clilen);
         if (newsockfd < 0) {
@@ -73,6 +77,7 @@ BOOL local_bind(DWORD port) {
 
         printf("[COMMON] Creating the thread that will handle this new client.\n");
         pthread_create(&tmp, NULL, client_connection, remote);
+//    client_connection(remote);
 
         // Clean before reuse
         memset(&tmp, 0, sizeof(pthread_t));
@@ -87,15 +92,16 @@ VOID client_connection(Remote *remote) {
     Packet *packet = NULL;
     DWORD res = ERROR_SUCCESS;
 
+    printf("[COMMON] client_connection handler in new thread\n", remote->address, remote->port, res);
     do {
         res = ERROR_SUCCESS;
         if ((res = packet_receive(remote, &packet)) < 0) {
-            printf("[COMMON]: Packet receive from client[%s:%d] with error:%d\n", remote->address, remote->port, res);
+            printf("[COMMON] Packet receive from client[%s:%d] with error:%d\n", remote->address, remote->port, res);
             return;
         }
 
         if (!command_handle(remote, packet)) {
-            printf("[COMMON]: Command handle of client connection [%s:%d] failed.\n", remote->address, remote->port);
+            printf("[COMMON] Command handle of client connection [%s:%d] failed.\n", remote->address, remote->port);
             return;
         }
     } while (TRUE);
@@ -163,6 +169,7 @@ static DWORD packet_transmit(Remote *remote, Packet *packet, PacketRequestComple
         idx = 0;
         while (idx < sizeof(packet->header)) {
             // Transmit the packet's header (length, type)
+            printf("[PACKET-DEBUG] transmit header to sockFD:%d\n", remote->sock);
             res = write(remote->sock,
                         (LPCSTR) (&packet->header) + idx,
                         sizeof(packet->header) - idx);
@@ -181,6 +188,7 @@ static DWORD packet_transmit(Remote *remote, Packet *packet, PacketRequestComple
         idx = 0;
         while (idx < packet->payloadLength) {
             // Transmit the packet's payload (length, type)
+            printf("[PACKET-DEBUG] transmit payload\n");
             res = write(remote->sock,
                         packet->payload + idx,
                         packet->payloadLength - idx);
@@ -241,15 +249,22 @@ static DWORD packet_receive(Remote *remote, Packet **packet) {
     do {
         // Read the packet length
         while (inHeader) {
+            printf("[PACKET-DEBUG] going to read from socketFD:%d, readbytes:%d.\n", remote->sock, sizeof(PacketHeader) - headerBytes);
             if ((bytesRead = read(remote->sock,
                                   ((PUCHAR) &header + headerBytes),
-                                  sizeof(PacketHeader) - headerBytes)) <= 0) {
+//                                  sizeof(PacketHeader) - headerBytes)) <= 0) {
+                                  1)) <= 0) {
+//            if ((bytesRead = recv(remote->sock,
+//                                  ((PUCHAR) &header + headerBytes),
+//                                  sizeof(PacketHeader) - headerBytes,
+//                                  MSG_DONTWAIT)) <= 0) {
                 if (!bytesRead) {
                     SetLastError(ERROR_NOT_FOUND);
+                    printf("[PACKET] receive header failed with error code %d.\n", local_error);
                 }
 
                 if (bytesRead < 0) {
-                    printf("[PACKET] receive header failed with error code %d.\n");
+                    printf("[PACKET] receive header failed with error code %d.\n", local_error);
                     SetLastError(ERROR_NOT_FOUND);
                 }
 

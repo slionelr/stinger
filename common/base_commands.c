@@ -29,7 +29,7 @@ DWORD remote_request_echo(Remote *remote, Packet *packet, PacketRequestCompletio
 
 DWORD remote_response_echo(Remote *remote, Packet *packet) {
     DWORD res = ERROR_SUCCESS;
-    packet_add_tlv_string(packet, TLV_TYPE_CIPHER_NAME, "LALALA");
+    packet_add_tlv_string(packet, TLV_TYPE_CIPHER_NAME, "LALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALA");
     PACKET_TRANSMIT(remote, packet, NULL);
     return res;
 }
