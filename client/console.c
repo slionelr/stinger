@@ -202,6 +202,8 @@ DWORD cmd_echo(Remote *remote, UINT argc, CHAR **argv) {
     Packet *request = NULL;
     PacketRequestCompletion complete;
 
+    memset(&arg, 0, sizeof(ArgumentContext));
+
     do {
         // No arguments?
         if (argc == 1) {

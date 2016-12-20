@@ -16,6 +16,7 @@ DWORD remote_request_echo(Remote *remote, Packet *packet, PacketRequestCompletio
     do
     {
         LPCSTR stam = packet_get_tlv_value_string(packet, TLV_TYPE_DATA);
+        printf("[ECHO] Recived data: %s\n", stam);
 
         packet_add_tlv_string(response, TLV_TYPE_DATA, stam);
 
@@ -29,7 +30,7 @@ DWORD remote_request_echo(Remote *remote, Packet *packet, PacketRequestCompletio
 
 DWORD remote_response_echo(Remote *remote, Packet *packet) {
     DWORD res = ERROR_SUCCESS;
-    packet_add_tlv_string(packet, TLV_TYPE_CIPHER_NAME, "LALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALALA");
+    packet_add_tlv_string(packet, TLV_TYPE_CIPHER_NAME, "LALALALALALA");
     PACKET_TRANSMIT(remote, packet, NULL);
     return res;
 }

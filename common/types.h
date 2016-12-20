@@ -28,7 +28,8 @@ typedef UCHAR *		PUCHAR;
 typedef	CSTR *		LPCSTR;
 typedef	CWSTR *		LPCWSTR;
 typedef	char *		LPSTR;
-typedef	long		DWORD;
+//typedef	long		DWORD; //TODO: Size problems between linux and freebsd
+typedef	int 		DWORD;
 typedef	DWORD *		LPDWORD;
 typedef	int32_t		LONG;
 typedef	LONG *		LPLONG;

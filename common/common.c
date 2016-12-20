@@ -169,7 +169,7 @@ static DWORD packet_transmit(Remote *remote, Packet *packet, PacketRequestComple
         idx = 0;
         while (idx < sizeof(packet->header)) {
             // Transmit the packet's header (length, type)
-            printf("[PACKET-DEBUG] transmit header to sockFD:%d\n", remote->sock);
+            printf("[PACKET-DEBUG] transmit header to sockFD:%d, bytes:%d\n", remote->sock, sizeof(packet->header) - idx);
             res = write(remote->sock,
                         (LPCSTR) (&packet->header) + idx,
                         sizeof(packet->header) - idx);
@@ -188,7 +188,7 @@ static DWORD packet_transmit(Remote *remote, Packet *packet, PacketRequestComple
         idx = 0;
         while (idx < packet->payloadLength) {
             // Transmit the packet's payload (length, type)
-            printf("[PACKET-DEBUG] transmit payload\n");
+            printf("[PACKET-DEBUG] transmit payload %d bytes.\n", packet->payloadLength - idx);
             res = write(remote->sock,
                         packet->payload + idx,
                         packet->payloadLength - idx);
@@ -252,12 +252,8 @@ static DWORD packet_receive(Remote *remote, Packet **packet) {
             printf("[PACKET-DEBUG] going to read from socketFD:%d, readbytes:%d.\n", remote->sock, sizeof(PacketHeader) - headerBytes);
             if ((bytesRead = read(remote->sock,
                                   ((PUCHAR) &header + headerBytes),
-//                                  sizeof(PacketHeader) - headerBytes)) <= 0) {
-                                  1)) <= 0) {
-//            if ((bytesRead = recv(remote->sock,
-//                                  ((PUCHAR) &header + headerBytes),
-//                                  sizeof(PacketHeader) - headerBytes,
-//                                  MSG_DONTWAIT)) <= 0) {
+                                  sizeof(PacketHeader) - headerBytes)) <= 0) {
+//                                  1)) <= 0) {
                 if (!bytesRead) {
                     SetLastError(ERROR_NOT_FOUND);
                     printf("[PACKET] receive header failed with error code %d.\n", local_error);
@@ -270,6 +266,7 @@ static DWORD packet_receive(Remote *remote, Packet **packet) {
 
                 break;
             }
+            printf("[PACKET-DEBUG] Received readbytes:%d.\n", bytesRead);
 
             headerBytes += bytesRead;
 
