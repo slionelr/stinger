@@ -24,7 +24,7 @@ typedef struct _PacketRequestCompletion
     LPVOID                         context;
     PacketRequestCompletionRoutine routine;
     DWORD                          timeout;
-} __attribute__((packed)) PacketRequestCompletion;
+}  PacketRequestCompletion;
 
 typedef BOOL(*PConnect)(Remote* remote);
 typedef BOOL(*PTransmit)(Remote *remote, Packet *packet, PacketRequestCompletion *completion);
@@ -38,12 +38,12 @@ typedef struct _Remote {
     PConnect connect;
     PTransmit transmit;
     PReceive receive;
-} __attribute__((packed)) Remote;
+}  Remote;
 
 typedef struct {
     DWORD length;
     DWORD type;
-} __attribute__((packed)) PacketHeader;
+}  PacketHeader;
 
 /*! @brief Packet definition. */
 typedef struct _Packet {
@@ -56,7 +56,7 @@ typedef struct _Packet {
     BOOL local;
     ///! @brief Pointer to the associated packet (response/request)
     struct _Packet *partner;
-} __attribute__((packed)) Packet;
+}  Packet;
 
 /*! @brief List element that contains packet completion routine details. */
 typedef struct _PacketCompletionRoutineEntry
@@ -64,7 +64,7 @@ typedef struct _PacketCompletionRoutineEntry
     LPCSTR                               requestId;   ///< Id of the request.
     PacketRequestCompletion              handler;     ///< Handler to call on completion.
     struct _PacketCompletionRoutineEntry *next;       ///< Pointer to the next compleiont routine entry.
-} __attribute__((packed)) PacketCompletionRoutineEntry;
+}  PacketCompletionRoutineEntry;
 
 ///**********************************************************************************************
 
@@ -213,12 +213,12 @@ typedef enum {
 typedef struct {
     DWORD length;
     DWORD type;
-} __attribute__((packed)) TlvHeader;
+}  TlvHeader;
 
 typedef struct {
     TlvHeader header;
     PUCHAR buffer;
-} __attribute__((packed)) Tlv;
+}  Tlv;
 
 /*
  * Packet manipulation

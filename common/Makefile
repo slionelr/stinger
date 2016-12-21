@@ -5,7 +5,7 @@ INC_LIBS= -lpthread
 COMPILED= ./bin
 DEBUG= -ggdb
 
-CFLAGS+= -D_DEBUG -D_C11 -D_BSD $(DEBUG)
+CFLAGS+= -D_DEBUG -D_BSD $(DEBUG)
 
 all:	$(OBJ)
 	@echo "Compiling Common"
